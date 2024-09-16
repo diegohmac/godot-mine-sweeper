@@ -5,10 +5,9 @@ const NUM_MINES = 10
 
 # The grid will be a list of lists
 var grid = []
+var cell_nodes = []
 
 func _ready():
-	print(randi())
-	print(randi() % GRID_SIZE)
 	randomize()
 	# Initialize the 9x9 grid with zeros
 	for i in range(GRID_SIZE):

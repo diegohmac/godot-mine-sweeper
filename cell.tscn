@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://k6op5eghtrap"]
+
+[ext_resource type="Script" path="res://cell.gd" id="1_g6t7o"]
+
+[node name="Cell" type="Node2D"]
+script = ExtResource("1_g6t7o")
+
+[node name="CellTexture" type="Sprite2D" parent="."]
