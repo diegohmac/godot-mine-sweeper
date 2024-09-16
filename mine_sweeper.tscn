@@ -3,4 +3,5 @@
 [ext_resource type="Script" path="res://mine_sweeper.gd" id="1_s10yf"]
 
 [node name="Game" type="Node2D"]
+position = Vector2(64, 64)
 script = ExtResource("1_s10yf")

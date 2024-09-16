@@ -25,26 +25,38 @@ func _ready():
 	populateGrid()
 	
 func populateGrid():
-	#for i in grid.size():
-		#pass
-	
-	var cell1 = CellScene.instantiate()
-	var cell2 = CellScene.instantiate()
-	var cell3 = CellScene.instantiate()
-	var cell4 = CellScene.instantiate()
-
-	cell1.is_mine = true
-	cell1.position = Vector2(1 * CELL_SIZE, 1 * CELL_SIZE)
-	cell2.position = Vector2(2 * CELL_SIZE, 1 * CELL_SIZE)
-	cell3.position = Vector2(3 * CELL_SIZE, 1 * CELL_SIZE)
-	cell4.adjacent_mines = ((randi() % 8) + 1)
-	cell4.position = Vector2(4 * CELL_SIZE, 1 * CELL_SIZE)
-	print(cell4.adjacent_mines)
-	
-	add_child(cell1)
-	add_child(cell2)
-	add_child(cell3)
-	add_child(cell4)
+	for i in grid.size():
+		for j in grid[i].size():
+			var cellType = grid[i][j]
+			var cell = CellScene.instantiate()
+			cell.position = Vector2(i * CELL_SIZE, j * CELL_SIZE)
+			
+			print(cellType)
+			match cellType:
+				-1:
+					cell.is_mine = true
+				1, 2, 3, 4, 5, 6, 7, 8:
+					cell.adjacent_mines = cellType
+			
+			add_child(cell)
+	#
+	#var cell1 = CellScene.instantiate()
+	#var cell2 = CellScene.instantiate()
+	#var cell3 = CellScene.instantiate()
+	#var cell4 = CellScene.instantiate()
+#
+	#cell1.is_mine = true
+	#cell1.position = Vector2(1 * CELL_SIZE, 1 * CELL_SIZE)
+	#cell2.position = Vector2(2 * CELL_SIZE, 1 * CELL_SIZE)
+	#cell3.position = Vector2(3 * CELL_SIZE, 1 * CELL_SIZE)
+	#cell4.adjacent_mines = ((randi() % 8) + 1)
+	#cell4.position = Vector2(4 * CELL_SIZE, 1 * CELL_SIZE)
+	#print(cell4.adjacent_mines)
+	#
+	#add_child(cell1)
+	#add_child(cell2)
+	#add_child(cell3)
+	#add_child(cell4)
 
 func place_mines():
 	var minesPlaced = 0
