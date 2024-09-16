@@ -2,12 +2,16 @@ extends Node2D
 
 const GRID_SIZE = 9
 const NUM_MINES = 10
+const CELL_SIZE = 32
 
 # The grid will be a list of lists
 var grid = []
-var cell_nodes = []
+
+var CellScene: PackedScene = preload("res://cell.tscn")
 
 func _ready():
+	print(randi())
+	print(randi() % GRID_SIZE)
 	randomize()
 	# Initialize the 9x9 grid with zeros
 	for i in range(GRID_SIZE):
@@ -18,6 +22,29 @@ func _ready():
 	place_mines()
 	calculate_numbers()
 	print_grid()
+	populateGrid()
+	
+func populateGrid():
+	#for i in grid.size():
+		#pass
+	
+	var cell1 = CellScene.instantiate()
+	var cell2 = CellScene.instantiate()
+	var cell3 = CellScene.instantiate()
+	var cell4 = CellScene.instantiate()
+
+	cell1.is_mine = true
+	cell1.position = Vector2(1 * CELL_SIZE, 1 * CELL_SIZE)
+	cell2.position = Vector2(2 * CELL_SIZE, 1 * CELL_SIZE)
+	cell3.position = Vector2(3 * CELL_SIZE, 1 * CELL_SIZE)
+	cell4.adjacent_mines = ((randi() % 8) + 1)
+	cell4.position = Vector2(4 * CELL_SIZE, 1 * CELL_SIZE)
+	print(cell4.adjacent_mines)
+	
+	add_child(cell1)
+	add_child(cell2)
+	add_child(cell3)
+	add_child(cell4)
 
 func place_mines():
 	var minesPlaced = 0

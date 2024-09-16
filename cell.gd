@@ -1,8 +1,9 @@
 extends Node2D
 
-# Signals to communicate with the main script
-signal mine_triggered(position)
-signal cell_revealed(position)
+## Signals to communicate with the main script
+#signal mine_triggered(position)
+#signal cell_revealed(position)
+#signal cell_flagged(position, is_flagged)
 
 @onready var CellTexture: Sprite2D = get_node("CellTexture")
 
@@ -33,24 +34,19 @@ var textures = {
 func _ready() -> void:
 	CellTexture.texture = textures["hidden"]
 	
-func reveal_cell():
-	if is_revealed or is_flagged:
-		return
-	is_revealed = true
-	update_texture()
-
-	if is_mine:
-		emit_signal("mine_triggered", grid_position)
-		# Handle game over in main script
-	else:
-		emit_signal("cell_revealed", grid_position)
-		if adjacent_mines == 0:
-			# Recursively reveal adjacent cells
-			reveal_adjacent_cells()
-
-	# Disable input if necessary
-	set_process_input(false)
-
+#func reveal_cell():
+	#if is_revealed or is_flagged:
+		#return
+	#is_revealed = true
+	#update_texture()
+#
+	#if is_mine:
+		#emit_signal("mine_triggered", grid_position)
+	#else:
+		#emit_signal("cell_revealed", grid_position)
+		#if adjacent_mines == 0:
+			#reveal_adjacent_cells()
+	#
 func update_texture():
 	if is_mine:
 		CellTexture.texture = textures["mine"]
@@ -58,21 +54,20 @@ func update_texture():
 		CellTexture.texture = textures["numbers"][adjacent_mines]
 	else:
 		CellTexture.texture = textures["revealed"]  # For cells with zero adjacent mines
-
-func reveal_adjacent_cells():
-	var game = get_parent()
-	for deltaX in range(-1, 2):
-		for deltaY in range(-1, 2):
-			if deltaX == 0 and deltaY == 0:
-				continue  # Skip the current cell
-			var newX = int(grid_position.x) + deltaX
-			var newY = int(grid_position.y) + deltaY
-			if game.is_valid_position(newX, newY):
-				var neighbor_cell = game.get_cell(newX, newY)
-				if neighbor_cell and not neighbor_cell.is_revealed and not neighbor_cell.is_mine:
-					neighbor_cell.reveal_cell()
-
-
+#
+#func reveal_adjacent_cells():
+	#var game = get_parent()
+	#for deltaX in range(-1, 2):
+		#for deltaY in range(-1, 2):
+			#if deltaX == 0 and deltaY == 0:
+				#continue  # Skip the current cell
+			#var newX = int(grid_position.x) + deltaX
+			#var newY = int(grid_position.y) + deltaY
+			#if game.is_valid_position(newX, newY):
+				#var neighbor_cell = game.get_cell(newX, newY)
+				#if neighbor_cell and not neighbor_cell.is_revealed and not neighbor_cell.is_flagged:
+					#neighbor_cell.reveal_cell()
+#
 func toggle_flag():
 	if is_revealed:
 		return
@@ -81,3 +76,15 @@ func toggle_flag():
 		CellTexture.texture = textures["flag"]
 	else:
 		CellTexture.texture = textures["hidden"]
+	
+	 #Emit the signal to notify the main game script
+	#emit_signal("cell_flagged", grid_position, is_flagged)
+
+func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			#reveal_cell()
+			is_revealed = true
+			update_texture()
+		elif event.button_index == MOUSE_BUTTON_RIGHT and not is_revealed:
+			toggle_flag()

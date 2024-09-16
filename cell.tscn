@@ -1,8 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://k6op5eghtrap"]
+[gd_scene load_steps=3 format=3 uid="uid://k6op5eghtrap"]
 
 [ext_resource type="Script" path="res://cell.gd" id="1_g6t7o"]
 
-[node name="Cell" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5yss2"]
+size = Vector2(32, 32)
+
+[node name="Cell" type="Area2D"]
 script = ExtResource("1_g6t7o")
 
 [node name="CellTexture" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_5yss2")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
