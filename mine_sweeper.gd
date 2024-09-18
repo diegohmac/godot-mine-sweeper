@@ -4,21 +4,19 @@ const GRID_SIZE = 9
 const NUM_MINES = 10
 const CELL_SIZE = 32
 
-# The grid will be a list of lists
 var grid = []
+var cells = []
 
 var CellScene: PackedScene = preload("res://cell.tscn")
 
 func _ready():
-	print(randi())
-	print(randi() % GRID_SIZE)
-	randomize()
 	# Initialize the 9x9 grid with zeros
 	for i in range(GRID_SIZE):
 		grid.append([])
+		cells.append([])
 		for j in range(GRID_SIZE):
 			grid[i].append(0)
-	# Place the Mines			
+
 	place_mines()
 	calculate_numbers()
 	print_grid()
@@ -29,9 +27,10 @@ func populateGrid():
 		for j in grid[i].size():
 			var cellType = grid[i][j]
 			var cell = CellScene.instantiate()
+			cells[i].append(cell)
 			cell.position = Vector2(i * CELL_SIZE, j * CELL_SIZE)
+			cell.grid_position = Vector2(i, j)
 			
-			print(cellType)
 			match cellType:
 				-1:
 					cell.is_mine = true
@@ -39,24 +38,6 @@ func populateGrid():
 					cell.adjacent_mines = cellType
 			
 			add_child(cell)
-	#
-	#var cell1 = CellScene.instantiate()
-	#var cell2 = CellScene.instantiate()
-	#var cell3 = CellScene.instantiate()
-	#var cell4 = CellScene.instantiate()
-#
-	#cell1.is_mine = true
-	#cell1.position = Vector2(1 * CELL_SIZE, 1 * CELL_SIZE)
-	#cell2.position = Vector2(2 * CELL_SIZE, 1 * CELL_SIZE)
-	#cell3.position = Vector2(3 * CELL_SIZE, 1 * CELL_SIZE)
-	#cell4.adjacent_mines = ((randi() % 8) + 1)
-	#cell4.position = Vector2(4 * CELL_SIZE, 1 * CELL_SIZE)
-	#print(cell4.adjacent_mines)
-	#
-	#add_child(cell1)
-	#add_child(cell2)
-	#add_child(cell3)
-	#add_child(cell4)
 
 func place_mines():
 	var minesPlaced = 0
@@ -97,3 +78,10 @@ func print_grid():
 			else:
 				row += str(cell) + " "
 		print(row)
+		
+func is_valid_position(x, y):
+	return x >= 0 and x < GRID_SIZE and y >= 0 and y < GRID_SIZE
+		
+func get_cell(x: int, y: int):
+	if is_valid_position(x, y):
+		return cells[x][y]
