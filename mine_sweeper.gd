@@ -6,6 +6,7 @@ const CELL_SIZE = 32
 
 var grid = []
 var cells = []
+var is_first_click = true
 
 var CellScene: PackedScene = preload("res://cell.tscn")
 
@@ -13,7 +14,6 @@ func _ready():
 	# Initialize the 9x9 grid with zeros
 	for i in range(GRID_SIZE):
 		grid.append([])
-		cells.append([])
 		for j in range(GRID_SIZE):
 			grid[i].append(0)
 
@@ -22,14 +22,21 @@ func _ready():
 	print_grid()
 	populateGrid()
 	
+func calculate_grid(x: int = -1, y: int = -1):
+	if x != -1 and y != -1:
+		print(x, y)
+	
 func populateGrid():
+	cells.clear()
 	for i in grid.size():
+		cells.append([])
 		for j in grid[i].size():
 			var cellType = grid[i][j]
 			var cell = CellScene.instantiate()
 			cells[i].append(cell)
 			cell.position = Vector2(i * CELL_SIZE, j * CELL_SIZE)
 			cell.grid_position = Vector2(i, j)
+			cell.connect("on_click", handle_first_click)
 			
 			match cellType:
 				-1:
@@ -85,3 +92,8 @@ func is_valid_position(x, y):
 func get_cell(x: int, y: int):
 	if is_valid_position(x, y):
 		return cells[x][y]
+
+func handle_first_click(grid_position):
+	if is_first_click:
+		is_first_click = false
+		calculate_grid(grid_position.x, grid_position.y)
