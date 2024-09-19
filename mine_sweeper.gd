@@ -17,14 +17,16 @@ func _ready():
 		for j in range(GRID_SIZE):
 			grid[i].append(0)
 
-	place_mines()
-	calculate_numbers()
 	print_grid()
 	populateGrid()
 	
 func calculate_grid(x: int = -1, y: int = -1):
 	if x != -1 and y != -1:
 		print(x, y)
+		place_mines(x, y)
+		calculate_numbers()
+		print_grid()
+		#populateGrid()
 	
 func populateGrid():
 	cells.clear()
@@ -46,15 +48,25 @@ func populateGrid():
 			
 			add_child(cell)
 
-func place_mines():
+func place_mines(exclude_x: int, exclude_y: int):
 	var minesPlaced = 0
 	while minesPlaced < NUM_MINES:
-		var x = randi() % GRID_SIZE
-		var y = randi() % GRID_SIZE
-		# Check if a mine is already placed at this position
-		if grid[x][y] != -1:
-			grid[x][y] = -1  # Use -1 to represent a mine
+		var mine_x = randi() % GRID_SIZE
+		var mine_y = randi() % GRID_SIZE
+
+		# If exclude_x and exclude_y are -1, place mines without restrictions
+		if exclude_x == -1 or exclude_y == -1:
+			if grid[mine_x][mine_y] != -1:
+				grid[mine_x][mine_y] = -1  # Place the mine
+				minesPlaced += 1
+		# Otherwise, check for exclusion zone
+		elif grid[mine_x][mine_y] != -1 and not is_adjacent_or_equal(mine_x, mine_y, exclude_x, exclude_y):
+			grid[mine_x][mine_y] = -1  # Place the mine
 			minesPlaced += 1
+
+# Helper function to check if (mine_x, mine_y) is adjacent or equal to (exclude_x, exclude_y)
+func is_adjacent_or_equal(mine_x: int, mine_y: int, exclude_x: int, exclude_y: int) -> bool:
+	return abs(mine_x - exclude_x) <= 1 and abs(mine_y - exclude_y) <= 1
 
 func calculate_numbers():
 	for x in range(GRID_SIZE):
