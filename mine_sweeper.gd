@@ -26,10 +26,10 @@ func calculate_grid(x: int = -1, y: int = -1):
 		place_mines(x, y)
 		calculate_numbers()
 		print_grid()
-		#populateGrid()
+		populateGrid()
 	
 func populateGrid():
-	cells.clear()
+	clear_cells()
 	for i in grid.size():
 		cells.append([])
 		for j in grid[i].size():
@@ -47,6 +47,15 @@ func populateGrid():
 					cell.adjacent_mines = cellType
 			
 			add_child(cell)
+
+func clear_cells():
+	for i in range(GRID_SIZE):
+		for j in range(GRID_SIZE):
+			if cells.size() > 0 and cells[i]:
+				var cell = cells[i][j]
+				if cell:
+					cell.queue_free()
+	cells.clear()
 
 func place_mines(exclude_x: int, exclude_y: int):
 	var minesPlaced = 0
