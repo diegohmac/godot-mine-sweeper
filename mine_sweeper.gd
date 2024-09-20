@@ -3,6 +3,7 @@ extends Node2D
 const GRID_SIZE = 9
 const NUM_MINES = 10
 const CELL_SIZE = 32
+const REVEALED_CELLS_COUNT_TO_WIN = GRID_SIZE * GRID_SIZE - NUM_MINES
 
 var grid = []
 var cells = []
@@ -26,9 +27,9 @@ func calculate_grid(x: int = -1, y: int = -1):
 		place_mines(x, y)
 		calculate_numbers()
 		print_grid()
-		populateGrid()
+		populateGrid(x,y)
 	
-func populateGrid():
+func populateGrid(x = -1,y = -1):
 	clear_cells()
 	for i in grid.size():
 		cells.append([])
@@ -39,6 +40,9 @@ func populateGrid():
 			cell.position = Vector2(i * CELL_SIZE, j * CELL_SIZE)
 			cell.grid_position = Vector2(i, j)
 			cell.connect("on_click", handle_first_click)
+			cell.connect("mine_revealed", handle_game_over)
+			if x == i and j == y:
+				cell.is_revealed = true
 			
 			match cellType:
 				-1:
@@ -118,3 +122,18 @@ func handle_first_click(grid_position):
 	if is_first_click:
 		is_first_click = false
 		calculate_grid(grid_position.x, grid_position.y)
+		
+func handle_game_over():
+	print("Game Over...")
+		
+func check_win_condition():
+	var revealed_cells_count = 0
+	for i in range(GRID_SIZE):
+		for j in range(GRID_SIZE):
+			var cell = get_cell(i, j)
+			if cell.is_revealed:
+				revealed_cells_count += 1
+	if revealed_cells_count == REVEALED_CELLS_COUNT_TO_WIN:
+		print("Victory!!!")
+		return
+	print("Still going...")
