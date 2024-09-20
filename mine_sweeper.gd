@@ -7,6 +7,7 @@ const REVEALED_CELLS_COUNT_TO_WIN = GRID_SIZE * GRID_SIZE - NUM_MINES
 
 var grid = []
 var cells = []
+var flags_placed = 0
 var is_first_click = true
 
 var CellScene: PackedScene = preload("res://cell.tscn")
@@ -41,6 +42,7 @@ func populateGrid(x = -1,y = -1):
 			cell.grid_position = Vector2(i, j)
 			cell.connect("on_click", handle_first_click)
 			cell.connect("mine_revealed", handle_game_over)
+			cell.connect("cell_flagged", handle_flag_count)
 			if x == i and j == y:
 				cell.is_revealed = true
 			
@@ -137,3 +139,16 @@ func check_win_condition():
 		print("Victory!!!")
 		return
 	print("Still going...")
+
+func handle_flag_count(grid_position, is_flagged: bool):
+	if is_flagged:
+		if flags_placed >= NUM_MINES:
+			return
+		else:
+			flags_placed += 1
+	else:
+		flags_placed -= 1
+		
+	var cell = get_cell(grid_position.x, grid_position.y)
+	cell.toggle_flag()
+	
