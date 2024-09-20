@@ -5,6 +5,7 @@ extends Node2D
 #signal cell_revealed(position)
 #signal cell_flagged(position, is_flagged)
 signal on_click(grid_position)
+signal mine_revealed
 
 @onready var CellTexture: Sprite2D = get_node("CellTexture")
 
@@ -35,7 +36,7 @@ var textures = {
 
 func _ready() -> void:
 	if is_revealed:
-		update_texture() #TODO: this should trigger reveal adjacent cells
+		update_texture()
 	else:
 		CellTexture.texture = textures["hidden"]
 	
@@ -44,9 +45,9 @@ func reveal_cell():
 		return
 	is_revealed = true
 	update_texture()
-#
+	
 	if is_mine:
-		#emit_signal("mine_triggered", grid_position)
+		emit_signal("mine_revealed")
 		pass
 	else:
 		#emit_signal("cell_revealed", grid_position)
@@ -89,7 +90,9 @@ func toggle_flag():
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
+			var game = get_parent()
 			emit_signal("on_click", grid_position)
 			reveal_cell()
+			game.check_win_condition()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and not is_revealed:
 			toggle_flag()
