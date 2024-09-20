@@ -1,9 +1,6 @@
 extends Node2D
 
 ## Signals to communicate with the main script
-#signal mine_triggered(position)
-#signal cell_revealed(position)
-#signal cell_flagged(position, is_flagged)
 signal on_click(grid_position)
 signal mine_revealed
 signal cell_flagged(is_flagged)
@@ -64,7 +61,7 @@ func update_texture():
 		CellTexture.texture = textures["revealed"]  # For cells with zero adjacent mines
 #
 func reveal_adjacent_cells():
-	var game = get_parent()
+	var game = get_parent().get_parent()
 	for deltaX in range(-1, 2):
 		for deltaY in range(-1, 2):
 			if deltaX == 0 and deltaY == 0:
@@ -87,7 +84,7 @@ func toggle_flag():
 
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed:
-		var game = get_parent()
+		var game = get_parent().get_parent()
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			emit_signal("on_click", grid_position)
 			reveal_cell()

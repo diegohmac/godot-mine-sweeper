@@ -12,8 +12,16 @@ var is_first_click = true
 
 var CellScene: PackedScene = preload("res://cell.tscn")
 
+var grid_parent: Control # A node that will hold all the cells
+
 func _ready():
-	# Initialize the 9x9 grid with zeros
+	# Create a parent Node2D to hold the grid of cells
+	grid_parent = Control.new()
+	grid_parent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	grid_parent.set_size(Vector2(GRID_SIZE * CELL_SIZE, GRID_SIZE * CELL_SIZE))
+	add_child(grid_parent)  # Add it to the main scene
+
+	# Initialize the grid and populate the cells
 	for i in range(GRID_SIZE):
 		grid.append([])
 		for j in range(GRID_SIZE):
@@ -21,6 +29,20 @@ func _ready():
 
 	print_grid()
 	populateGrid()
+
+	# Center the parent node after populating the grid
+	center_grid()
+	print(grid_parent.get_rect())
+
+func center_grid():
+	# Get the viewport size
+	var viewport_size = get_viewport().size
+
+	# Use get_rect().size to get the size of grid_parent
+	var grid_size = grid_parent.get_rect().size
+
+	# Center the grid by setting the position
+	grid_parent.set_position((Vector2(viewport_size) / 2) - (grid_size / 2))
 	
 func calculate_grid(x: int = -1, y: int = -1):
 	if x != -1 and y != -1:
@@ -30,29 +52,37 @@ func calculate_grid(x: int = -1, y: int = -1):
 		print_grid()
 		populateGrid(x,y)
 	
-func populateGrid(x = -1,y = -1):
-	clear_cells()
-	for i in grid.size():
+func populateGrid(x = -1, y = -1):
+	clear_cells()  # Clear existing cells
+	
+	for i in range(GRID_SIZE):
 		cells.append([])
-		for j in grid[i].size():
-			var cellType = grid[i][j]
+		for j in range(GRID_SIZE):
 			var cell = CellScene.instantiate()
 			cells[i].append(cell)
+
+			# Set the position of each cell
 			cell.position = Vector2(i * CELL_SIZE, j * CELL_SIZE)
 			cell.grid_position = Vector2(i, j)
+
+			# Connect signals to handle clicks, mines, flags, etc.
 			cell.connect("on_click", handle_first_click)
 			cell.connect("mine_revealed", handle_game_over)
 			cell.connect("cell_flagged", handle_flag_count)
-			if x == i and j == y:
+
+			# Set specific properties for the cell based on the grid value
+			var cellType = grid[i][j]
+			if x == i and y == j:
 				cell.is_revealed = true
-			
 			match cellType:
 				-1:
 					cell.is_mine = true
 				1, 2, 3, 4, 5, 6, 7, 8:
 					cell.adjacent_mines = cellType
-			
-			add_child(cell)
+
+			# Add the cell as a child of the parent node (grid_parent)
+			grid_parent.add_child(cell)
+
 
 func clear_cells():
 	for i in range(GRID_SIZE):
