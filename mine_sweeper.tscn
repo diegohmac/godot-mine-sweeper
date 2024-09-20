@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://eg4ijbdbuk85"]
+[gd_scene load_steps=3 format=3 uid="uid://eg4ijbdbuk85"]
 
 [ext_resource type="Script" path="res://mine_sweeper.gd" id="1_s10yf"]
+[ext_resource type="PackedScene" uid="uid://dvbl1iv8m2tgv" path="res://ui.tscn" id="2_apjbq"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" node_paths=PackedStringArray("ui")]
 script = ExtResource("1_s10yf")
+ui = NodePath("UI")
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[node name="UI" parent="." instance=ExtResource("2_apjbq")]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

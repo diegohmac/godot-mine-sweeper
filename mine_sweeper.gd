@@ -1,5 +1,8 @@
 extends Node2D
 
+@export var ui: UI
+@onready var timer: Timer = $Timer
+
 const GRID_SIZE = 9
 const NUM_MINES = 10
 const CELL_SIZE = 32
@@ -9,6 +12,7 @@ var grid = []
 var cells = []
 var flags_placed = 0
 var is_first_click = true
+var time_elapsed = 0
 
 var CellScene: PackedScene = preload("res://cell.tscn")
 
@@ -32,7 +36,7 @@ func _ready():
 
 	# Center the parent node after populating the grid
 	center_grid()
-	print(grid_parent.get_rect())
+	ui.set_mine_count(NUM_MINES)
 
 func center_grid():
 	# Get the viewport size
@@ -156,7 +160,8 @@ func handle_first_click(grid_position):
 		calculate_grid(grid_position.x, grid_position.y)
 		
 func handle_game_over():
-	print("Game Over...")
+	timer.stop()
+	ui.game_over()
 		
 func check_win_condition():
 	var revealed_cells_count = 0
@@ -166,11 +171,14 @@ func check_win_condition():
 			if cell.is_revealed:
 				revealed_cells_count += 1
 	if revealed_cells_count == REVEALED_CELLS_COUNT_TO_WIN:
-		print("Victory!!!")
+		timer.stop()
+		ui.game_won()
 		return
-	print("Still going...")
 
 func handle_flag_count(grid_position, is_flagged: bool):
+	if is_first_click:
+		return
+		
 	if is_flagged:
 		if flags_placed >= NUM_MINES:
 			return
@@ -179,6 +187,10 @@ func handle_flag_count(grid_position, is_flagged: bool):
 	else:
 		flags_placed -= 1
 		
+	ui.set_mine_count(NUM_MINES - flags_placed)
 	var cell = get_cell(grid_position.x, grid_position.y)
 	cell.toggle_flag()
-	
+
+func _on_timer_timeout() -> void:
+	time_elapsed += 1
+	ui.set_timer(time_elapsed)
